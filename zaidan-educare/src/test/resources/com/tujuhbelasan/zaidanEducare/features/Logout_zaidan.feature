@@ -1,5 +1,5 @@
 Feature: User Logout
-  Scenario: Logout from applicaton/website
+  Scenario: Check logout is successful with valid credentials as role "Bendahara"
     Given User open the browser
     And User navigates to Login page
     And User enters username "bendahara"
