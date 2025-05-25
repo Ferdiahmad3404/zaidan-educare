@@ -28,4 +28,16 @@ public class AppHooks {
             System.out.println("🛑 Browser ditutup setelah scenario");
         }
     }
+
+    @After("@logout")
+    public void afterLogoutScenario() {
+        try {
+            if (driver != null && !driver.getCurrentUrl().contains("login")) {
+                driver.get("http://ptbsp.ddns.net:6882/login");
+                System.out.println("⚠️ Kembali ke halaman login setelah logout");
+            }
+        } catch (Exception e) {
+            System.err.println("Gagal mengarahkan ke halaman login: " + e.getMessage());
+        }
+    }
 }
