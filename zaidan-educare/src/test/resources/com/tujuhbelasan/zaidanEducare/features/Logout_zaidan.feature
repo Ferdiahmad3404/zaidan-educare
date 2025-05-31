@@ -1,4 +1,5 @@
 Feature: User Logout
+  @valid
   Scenario: Check logout is successful with valid credentials as role "Bendahara"
     Given User navigated to Login page
     And User enters username "bendahara"

@@ -1,4 +1,5 @@
 Feature: User Login
+  @valid
   Scenario: Check login is successful with valid credentials as role "bendahara"
     Given User navigated to Login page
     When User enters username "bendahara"
@@ -14,7 +15,7 @@ Feature: User Login
       | Rekapitulasi |
       | Progres Transaksi Penerimaan Dana |
 
-
+  @invalid
   Scenario: Check login is un-successful with invalid credentials. Its is username not registered
     Given User navigated to Login page
     When User enters username "indra"
