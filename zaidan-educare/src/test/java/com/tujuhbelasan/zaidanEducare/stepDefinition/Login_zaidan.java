@@ -8,6 +8,7 @@ import io.cucumber.java.en.When;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,17 +56,24 @@ public class Login_zaidan {
         List<String> expectedItems = dataTable.asList();
         List<String> actualItems = dashboardPage.getSidebarItemsText();
 
-        for (String expectedItem : expectedItems) {
-            boolean found = false;
-            for (String actualItem : actualItems) {
-                if (actualItem.equalsIgnoreCase(expectedItem)) {
-                    found = true;
-                    break;
-                }
-            }
-            assertTrue(found, "Sidebar tidak mengandung item yang diharapkan: " + expectedItem);
-        }
+        // Temukan item yang diharapkan tetapi tidak ada di actualItems
+        List<String> missingItems = expectedItems.stream()
+                .filter(expectedItem -> actualItems.stream().noneMatch(actualItem -> actualItem.equalsIgnoreCase(expectedItem)))
+                .toList();
+
+        // Temukan item yang tidak diharapkan tetapi muncul di actualItems (opsional jika Anda peduli lebih banyak validasi)
+        List<String> unexpectedItems = actualItems.stream()
+                .filter(actualItem -> expectedItems.stream().noneMatch(expectedItem -> expectedItem.equalsIgnoreCase(actualItem)))
+                .toList();
+
+        // Assert menggunakan assertEquals untuk menunjukkan daftar yang sesuai
+        assertEquals(
+                expectedItems,
+                actualItems,
+                "❌ Sidebar item mismatch.\nMissing items: " + missingItems + "\nUnexpected items: " + unexpectedItems
+        );
     }
+
 
     @Then("User should get a warning message {string}")
     public void user_should_get_a_warning_message(String expectedMessage) {

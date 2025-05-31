@@ -1,100 +1,58 @@
 package com.tujuhbelasan.zaidanEducare.utility;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 public class BrowserDriver {
     public static WebDriver driver;
 
     public BrowserDriver() {
-        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/src/test/resources/drivers/chromedriver.exe");
-        System.setProperty("webdriver.edge.driver", System.getProperty("user.dir") + "/src/test/resources/drivers/msedgedriver.exe");
-
-        // Try browsers in this order: Chrome, Brave, Edge
         if (initChrome()) {
-            System.out.println("Using Google Chrome browser");
-        } else if (initBrave()) {
-            System.out.println("Using Brave browser");
-        } else if (initEdge()) {
-            System.out.println("Using Microsoft Edge browser");
+            System.out.println("✅ Using Google Chrome browser");
         } else {
-            throw new RuntimeException("No supported browsers (Chrome, Brave, or Edge) found on this system");
+            throw new RuntimeException("⚠️ Google Chrome gagal diinisialisasi.");
         }
     }
 
     private boolean initChrome() {
-        List<String> chromePaths = Arrays.asList(
-            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
-        );
+        try {
+            // Setting up WebDriverManager untuk Chrome
+            WebDriverManager.chromedriver().setup();
 
-        for (String path : chromePaths) {
-            if (new File(path).exists()) {
-                try {
-                    ChromeOptions options = new ChromeOptions();
-                    options.setBinary(path);
-                    driver = new ChromeDriver(options);
-                    return true;
-                } catch (Exception e) {
-                    System.out.println("Chrome found but failed to initialize: " + e.getMessage());
-                }
-            }
+            // Konfigurasi ChromeOptions
+            ChromeOptions options = new ChromeOptions();
+
+            options.setExperimentalOption("prefs", Map.of(
+                    "credentials_enable_service", false, // Nonaktifkan kredensial
+                    "profile.password_manager_enabled", false, // Nonaktifkan password manager
+                    "profile.password_manager_leak_detection", false
+            ));
+
+
+            // Nonaktifkan pop-up keamanan Chrome
+            options.addArguments("--disable-popup-blocking");
+            options.addArguments("--disable-infobars");
+            options.addArguments("--disable-notifications");
+            options.addArguments("--start-maximized"); // Jalankan browser dalam mode maksimal
+
+            // (Opsional) Jalankan browser tanpa UI
+            // options.addArguments("--headless"); // Hanya untuk penggunaan tanpa tampilan
+
+            // Inisialisasi ChromeDriver dengan opsi
+            driver = new ChromeDriver(options);
+            return true;
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal memulai Chrome: " + e.getMessage());
+            return false;
         }
-        return false;
-    }
-
-    private boolean initBrave() {
-        List<String> bravePaths = Arrays.asList(
-            "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
-            "C:\\Program Files (x86)\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
-        );
-
-        for (String path : bravePaths) {
-            if (new File(path).exists()) {
-                try {
-                    ChromeOptions options = new ChromeOptions();
-                    options.setBinary(path);
-                    driver = new ChromeDriver(options);
-                    return true;
-                } catch (Exception e) {
-                    System.out.println("Brave found but failed to initialize: " + e.getMessage());
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean initEdge() {
-        List<String> edgePaths = Arrays.asList(
-            "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-            "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe"
-        );
-
-        for (String path : edgePaths) {
-            if (new File(path).exists()) {
-                try {
-                    EdgeOptions options = new EdgeOptions();
-                    options.setBinary(path);
-                    driver = new EdgeDriver(options);
-                    return true;
-                } catch (Exception e) {
-                    System.out.println("Edge found but failed to initialize: " + e.getMessage());
-                }
-            }
-        }
-        return false;
     }
 
     public static void close() {
         if (driver != null) {
-            driver.close();
+            driver.quit();
         }
     }
 }
