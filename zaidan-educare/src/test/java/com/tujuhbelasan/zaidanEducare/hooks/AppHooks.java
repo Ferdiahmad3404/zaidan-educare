@@ -18,7 +18,7 @@ public class AppHooks {
 
     @BeforeStep
     public void delayPerStep() throws InterruptedException {
-        Thread.sleep(100); // Delay 3 detik setiap step
+        Thread.sleep(500); // Delay 3 detik setiap step
     }
 
     @After

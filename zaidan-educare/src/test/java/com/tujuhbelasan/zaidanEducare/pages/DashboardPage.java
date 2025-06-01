@@ -47,7 +47,7 @@ public class DashboardPage {
     }
 
     public void clickLogoutButton() {
-        WebElement userMenu = driver.findElement(DashboardPageLocators.USER_MENU);
+        WebElement userMenu = driver.findElement(DashboardPageLocators.LOGOUT_BUTTON);
 
         try {
             userMenu.click();
